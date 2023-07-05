@@ -3,7 +3,7 @@ from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
 from database import Base
 
 
-class Users(Base):
+class User(Base):
     __tablename__ = 'users'
 
     id = Column(Integer, primary_key=True, index=True)
@@ -16,7 +16,7 @@ class Users(Base):
     role = Column(String)
 
 
-class Todos(Base):
+class Todo(Base):
     __tablename__ = 'todos'
 
     id = Column(Integer, primary_key=True, index=True)
