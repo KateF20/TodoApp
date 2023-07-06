@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
+from sqlalchemy.orm import relationship
 
 from database import Base
 
@@ -14,6 +15,11 @@ class User(Base):
     hashed_password = Column(Integer)
     is_active = Column(Boolean, default=True)
     role = Column(String)
+    phone_number = Column(String)
+    address_id = Column(Integer, ForeignKey('address.id'), nullable=True)
+
+    todos = relationship('Todo', back_populates='owner')
+    address = relationship('Address', back_populates='user_address')
 
 
 class Todo(Base):
@@ -25,3 +31,19 @@ class Todo(Base):
     priority = Column(Integer)
     complete = Column(Boolean, default=False)
     owner_id = Column(Integer, ForeignKey('users.id'))
+
+    owner = relationship('User', back_populates='todos')
+
+
+class Address(Base):
+    __tablename__ = 'address'
+
+    id = Column(Integer, primary_key=True, index=True)
+    address1 = Column(String)
+    address2 = Column(String)
+    city = Column(String)
+    state = Column(String)
+    country = Column(String)
+    postalcode = Column(String)
+
+    user_address = relationship('User', back_populates='address')
