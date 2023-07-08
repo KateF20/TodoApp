@@ -1,8 +1,8 @@
 from starlette import status
 from pydantic import BaseModel, Field
-from fastapi import HTTPException, Path, APIRouter
+from fastapi import HTTPException, APIRouter
 
-from models import Todo, User
+from models import User
 from dependencies import user_dependency, db_dependency_type, bcrypt_context
 
 
