@@ -22,7 +22,7 @@ async def get_all(user: user_dependency, db: db_dependency_type):
 async def delete_todo(user: user_dependency, db: db_dependency_type, todo_id: int = Path(gt=0)):
     if user is None or user.get('user_role') != 'admin':
         raise HTTPException(status_code=401, detail='Authentication failed')
-    todo_to_delete = db.query(Todo).filter(Todo.id == todo_id).first()
+    todo_to_delete = db.query(Todo).filter(Todo.id == todo_id).one_or_none()
     if todo_to_delete is None:
         raise HTTPException(status_code=404, detail='Todo not found')
     db.query(Todo).filter(Todo.id == todo_id).delete()

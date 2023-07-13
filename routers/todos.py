@@ -30,7 +30,7 @@ async def get_todo_by_id(user: user_dependency, db: db_dependency_type, todo_id:
     if user is None:
         raise HTTPException(status_code=401, detail='Authentication failed')
 
-    todo_model = db.query(Todo).filter(Todo.id == todo_id).filter(Todo.owner_id == user.get('id')).first()
+    todo_model = db.query(Todo).filter(Todo.id == todo_id).filter(Todo.owner_id == user.get('id')).one_or_none()
     if todo_model is not None:
         return todo_model
     raise HTTPException(status_code=404, detail='todo not found')
@@ -49,11 +49,12 @@ async def create_todo(user: user_dependency, db: db_dependency_type, todo_model:
 @router.put('/todo/{todo_id}', status_code=status.HTTP_204_NO_CONTENT)
 async def update_todo(user: user_dependency, db: db_dependency_type,
                    todo_model: TodoModel,
-                   todo_id: int = Path(gt=0)):
+                   todo_id: int = Path(gt=0),
+                   user_id: int = Path(gt=0)):
     if user is None:
         raise HTTPException(status_code=401, detail='Authentication Failed')
 
-    todo = db.query(Todo).filter(Todo.id == todo_id).first()
+    todo = db.query(Todo).filter(Todo.id == todo_id, Todo.owner_id == user_id).one_or_none()
     if todo_model is None:
         raise HTTPException(status_code=404, detail='Todo not found')
 
@@ -67,11 +68,13 @@ async def update_todo(user: user_dependency, db: db_dependency_type,
 
 
 @router.delete('/todo/{todo_id}', status_code=status.HTTP_204_NO_CONTENT)
-async def delete_todo(user: user_dependency, db: db_dependency_type, todo_id: int = Path(gt=0)):
+async def delete_todo(user: user_dependency, db: db_dependency_type,
+                      todo_id: int = Path(gt=0),
+                      user_id: int = Path(gt=0)):
     if user is None:
         raise HTTPException(status_code=401, detail='Authentication Failed')
 
-    todo = db.query(Todo).filter(Todo.id == todo_id).first()
+    todo = db.query(Todo).filter(Todo.id == todo_id, Todo.owner_id == user_id).one_or_none()
     if todo is None:
         raise HTTPException(status_code=404, detail='Todo not found')
 

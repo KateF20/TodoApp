@@ -40,7 +40,7 @@ class Token(BaseModel):
 
 
 def authenticate_user(username: str, password: str, db):
-    user = db.query(User).filter(User.username == username).first()
+    user = db.query(User).filter(User.username == username).one_or_none()
     if not user:
         return False
     if not bcrypt_context.verify(password, user.hashed_password):
