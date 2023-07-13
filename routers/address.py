@@ -26,7 +26,6 @@ class Address(BaseModel):
     postalcode: str
 
 
-
 @router.post('/')
 async def create_address(address: Address, user: dict = Depends(get_current_user), db: Session = Depends(get_db)):
     if user is None:
