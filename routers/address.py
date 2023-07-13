@@ -2,12 +2,11 @@ import sys
 sys.path.append('...')
 
 from typing import Optional
-from fastapi import Depends, APIRouter
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
+from fastapi import Depends, APIRouter
 
 import models
-from database import engine, SessionLocal
 from dependencies import get_current_user, get_user_exception, get_db
 
 router = APIRouter(
@@ -42,7 +41,7 @@ async def create_address(address: Address, user: dict = Depends(get_current_user
     db.add(address_model)
     db.flush()
 
-    user_model = db.query(models.User).filter(models.User.id == user.get('id')).first()
+    user_model = db.query(models.User).filter(models.User.id == user.get('id')).one_or_none()
     user_model.address_id = address_model.id
 
     db.add(user_model)
