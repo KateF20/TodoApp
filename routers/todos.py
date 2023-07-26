@@ -1,7 +1,6 @@
 from starlette import status
 from pydantic import BaseModel, Field
 from fastapi import HTTPException, Path, APIRouter
-from passlib.context import CryptContext
 
 from models import Todo
 from dependencies import user_dependency, db_dependency_type
@@ -30,7 +29,7 @@ async def get_todo_by_id(user: user_dependency, db: db_dependency_type, todo_id:
     if user is None:
         raise HTTPException(status_code=401, detail='Authentication failed')
 
-    todo_model = db.query(Todo).filter(Todo.id == todo_id).filter(Todo.owner_id == user.get('id')).first()
+    todo_model = db.query(Todo).filter(Todo.id == todo_id).filter(Todo.owner_id == user.get('id')).one_or_none()
     if todo_model is not None:
         return todo_model
     raise HTTPException(status_code=404, detail='todo not found')
@@ -53,7 +52,7 @@ async def update_todo(user: user_dependency, db: db_dependency_type,
     if user is None:
         raise HTTPException(status_code=401, detail='Authentication Failed')
 
-    todo = db.query(Todo).filter(Todo.id == todo_id).first()
+    todo = db.query(Todo).filter(Todo.id == todo_id).one_or_none()
     if todo_model is None:
         raise HTTPException(status_code=404, detail='Todo not found')
 
@@ -71,7 +70,7 @@ async def delete_todo(user: user_dependency, db: db_dependency_type, todo_id: in
     if user is None:
         raise HTTPException(status_code=401, detail='Authentication Failed')
 
-    todo = db.query(Todo).filter(Todo.id == todo_id).first()
+    todo = db.query(Todo).filter(Todo.id == todo_id).one_or_none()
     if todo is None:
         raise HTTPException(status_code=404, detail='Todo not found')
 

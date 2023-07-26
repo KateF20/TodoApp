@@ -1,4 +1,5 @@
 from typing import Annotated
+from os import getenv
 
 from sqlalchemy.orm import Session
 from fastapi import Depends, HTTPException
@@ -17,9 +18,6 @@ def get_db():
     finally:
         db.close()
 
-
-SECRET_KEY = '197b2c37c391bed93fe80344fe73b806947a65e36206e05a1a23c2fa12702fe3'
-ALGORITHM = ['HS256']
 
 bcrypt_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 oauth2_bearer = OAuth2PasswordBearer(tokenUrl='auth/token')
@@ -42,3 +40,12 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
 
 db_dependency_type = Annotated[Session, Depends(get_db)]
 user_dependency = Annotated[dict, Depends(get_current_user)]
+
+
+def get_user_exception():
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    return credentials_exception
